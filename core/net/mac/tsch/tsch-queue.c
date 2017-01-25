@@ -61,7 +61,7 @@
 #else /* TSCH_LOG_LEVEL */
 #define DEBUG DEBUG_NONE
 #endif /* TSCH_LOG_LEVEL */
-#include "net/ip/uip-debug.h"
+#include "net/net-debug.h"
 
 /* Check if TSCH_QUEUE_NUM_PER_NEIGHBOR is power of two */
 #if (TSCH_QUEUE_NUM_PER_NEIGHBOR & (TSCH_QUEUE_NUM_PER_NEIGHBOR - 1)) != 0
@@ -163,6 +163,13 @@ tsch_queue_update_time_source(const linkaddr_t *new_addr)
         /* Update time source */
         if(new_time_src != NULL) {
           new_time_src->is_time_source = 1;
+          /* (Re)set keep-alive timeout */
+          tsch_set_ka_timeout(TSCH_KEEPALIVE_TIMEOUT);
+          /* Start sending keepalives */
+          tsch_schedule_keepalive();
+        } else {
+          /* Stop sending keepalives */
+          tsch_set_ka_timeout(0);
         }
 
         if(old_time_src != NULL) {
