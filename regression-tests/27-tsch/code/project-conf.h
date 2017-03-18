@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, Thingsquare, http://www.thingsquare.com/.
+ * Copyright (c) 2017, Yasuyuki Tanaka
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,40 +27,37 @@
  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
- *
  */
-#ifndef IP64_ADDR_H
-#define IP64_ADDR_H
 
-#include "net/ip/uip.h"
+#ifndef _PROJECT_CONF_H_
+#define _PROJECT_CONF_H_
 
+#define UNIT_TEST_PRINT_FUNCTION test_print_report
 
-/**
- * \brief Is IPv4-mapped Address
- *
- * See https://tools.ietf.org/html/rfc6890#page-14
- */
-#define ip64_addr_is_ipv4_mapped_addr(a) \
-  ((((a)->u16[0])  == 0) &&              \
-   (((a)->u16[1])  == 0) &&              \
-   (((a)->u16[2])  == 0) &&              \
-   (((a)->u16[3])  == 0) &&              \
-   (((a)->u16[4])  == 0) &&              \
-   (((a)->u16[5])  == 0xFFFF))
+/* Set the minimum value of QUEUEBUF_CONF_NUM for the flush_nbr_queue test */
+#undef QUEUEBUF_CONF_NUM
+#define QUEUEBUF_CONF_NUM   1
 
-void ip64_addr_copy4(uip_ip4addr_t *dest, const uip_ip4addr_t *src);
+#undef TSCH_LOG_CONF_LEVEL
+#define TSCH_LOG_CONF_LEVEL 2
 
-void ip64_addr_copy6(uip_ip6addr_t *dest, const uip_ip6addr_t *src);
+#undef TSCH_CONF_AUTOSTART
+#define TSCH_CONF_AUTOSTART 1
 
-int ip64_addr_6to4(const uip_ip6addr_t *ipv6addr,
-		   uip_ip4addr_t *ipv4addr);
+#undef NETSTACK_CONF_MAC
+#define NETSTACK_CONF_MAC        tschmac_driver
 
-int ip64_addr_4to6(const uip_ip4addr_t *ipv4addr,
-		   uip_ip6addr_t *ipv6addr);
+#undef NETSTACK_CONF_RDC
+#define NETSTACK_CONF_RDC        nordc_driver
 
-int ip64_addr_is_ip64(const uip_ip6addr_t *ipv6addr);
+#undef NETSTACK_CONF_FRAMER
+#define NETSTACK_CONF_FRAMER     framer_802154
 
-void ip64_addr_set_prefix(const uip_ip6addr_t *prefix, uint8_t prefix_len);
+#undef FRAME802154_CONF_VERSION
+#define FRAME802154_CONF_VERSION FRAME802154_IEEE802154E_2012
 
-#endif /* IP64_ADDR_H */
+#if CONTIKI_TARGET_COOJA
+#define COOJA_CONF_SIMULATE_TURNAROUND 0
+#endif /* CONTIKI_TARGET_COOJA */
 
+#endif /* __PROJECT_CONF_H__ */

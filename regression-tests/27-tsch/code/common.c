@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, Thingsquare, http://www.thingsquare.com/.
+ * Copyright (c) 2017, Yasuyuki Tanaka
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,40 +27,28 @@
  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
- *
  */
-#ifndef IP64_ADDR_H
-#define IP64_ADDR_H
 
-#include "net/ip/uip.h"
+#include <stdio.h>
+#include <string.h>
 
+#include "unit-test.h"
+#include "common.h"
 
-/**
- * \brief Is IPv4-mapped Address
- *
- * See https://tools.ietf.org/html/rfc6890#page-14
- */
-#define ip64_addr_is_ipv4_mapped_addr(a) \
-  ((((a)->u16[0])  == 0) &&              \
-   (((a)->u16[1])  == 0) &&              \
-   (((a)->u16[2])  == 0) &&              \
-   (((a)->u16[3])  == 0) &&              \
-   (((a)->u16[4])  == 0) &&              \
-   (((a)->u16[5])  == 0xFFFF))
+#include "lib/simEnvChange.h"
+#include "sys/cooja_mt.h"
 
-void ip64_addr_copy4(uip_ip4addr_t *dest, const uip_ip4addr_t *src);
+void
+test_print_report(const unit_test_t *utp)
+{
+  printf("=check-me= ");
+  if(utp->result == unit_test_failure) {
+    printf("FAILED   - %s: exit at L%u\n", utp->descr, utp->exit_line);
+  } else {
+    printf("SUCCEEDED - %s\n", utp->descr);
+  }
 
-void ip64_addr_copy6(uip_ip6addr_t *dest, const uip_ip6addr_t *src);
-
-int ip64_addr_6to4(const uip_ip6addr_t *ipv6addr,
-		   uip_ip4addr_t *ipv4addr);
-
-int ip64_addr_4to6(const uip_ip4addr_t *ipv4addr,
-		   uip_ip6addr_t *ipv6addr);
-
-int ip64_addr_is_ip64(const uip_ip6addr_t *ipv6addr);
-
-void ip64_addr_set_prefix(const uip_ip6addr_t *prefix, uint8_t prefix_len);
-
-#endif /* IP64_ADDR_H */
-
+  /* give up the CPU so that the mote can output messages in the serial buffer */
+  simProcessRunValue = 1;
+  cooja_mt_yield();
+}
